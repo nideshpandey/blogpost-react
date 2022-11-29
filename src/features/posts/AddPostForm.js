@@ -1,16 +1,27 @@
 import React from "react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addPost } from "./postsSlice";
 
 const AddPostForm = () => {
   const myStyle = {
     justifyContent: "right",
-
   };
+  const dispatch = useDispatch();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   const onTitleChange = (e) => setTitle(e.target.value);
   const onDescChange = (e) => setDescription(e.target.value);
+
+  const onClickedPost = (e) => {
+    e.preventDefault();
+    if (title && description) {
+      dispatch(addPost(title, description));
+      setTitle("");
+      setDescription("");
+    }
+  };
 
   return (
     <div style={myStyle}>
@@ -28,7 +39,7 @@ const AddPostForm = () => {
             onChange={onDescChange}
           ></textarea>
         </label>
-        <button>Post</button>
+        <button onClick={onClickedPost}>Post</button>
       </form>
     </div>
   );
