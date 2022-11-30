@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAllUsers } from "../users/usersSlice";
 import { addPost } from "./postsSlice";
 
 const AddPostForm = () => {
@@ -8,28 +9,51 @@ const AddPostForm = () => {
     justifyContent: "right",
   };
   const dispatch = useDispatch();
+  const users = useSelector(selectAllUsers);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [userId, setUserId] = useState("");
 
   const onTitleChange = (e) => setTitle(e.target.value);
   const onDescChange = (e) => setDescription(e.target.value);
+  const onUserChange = (e) => setUserId(e.target.value);
+
+  const onSave = Boolean(title) && Boolean(description) && Boolean(userId);
 
   const onClickedPost = (e) => {
     e.preventDefault();
     if (title && description) {
-      dispatch(addPost(title, description));
+      dispatch(addPost(title, description, userId));
       setTitle("");
       setDescription("");
     }
   };
 
+  const selectOptions = users.map((user) => (
+    <option key={user.id} value={user.id}>
+      {user.name}
+    </option>
+  ));
+
   return (
     <div style={myStyle}>
       <h3>Add Posts</h3>
       <form>
-        <label htmlFor="postTitle" value={title} onChange={onTitleChange}>
+        <label htmlFor="userName">
+          Author:
+          <select name="userName" value={userId} onChange={onUserChange}>
+            <option value=""></option>
+            {selectOptions}
+          </select>
+        </label>
+        <label htmlFor="postTitle">
           Title:
-          <input type="text" name="postTitle" />
+          <input
+            type="text"
+            name="postTitle"
+            value={title}
+            onChange={onTitleChange}
+          />
         </label>
         <label htmlFor="postDescription">
           Description:
@@ -39,7 +63,9 @@ const AddPostForm = () => {
             onChange={onDescChange}
           ></textarea>
         </label>
-        <button onClick={onClickedPost}>Post</button>
+        <button disabled={!onSave} onClick={onClickedPost}>
+          Post
+        </button>
       </form>
     </div>
   );
