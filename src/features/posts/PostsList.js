@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import PostAuthor from "./PostAuthor";
 import { selectAllPosts } from "./postsSlice";
+import ReactionButtons from "./ReactionButtons";
 import Time from "./Time";
 
 const PostsList = () => {
@@ -15,7 +16,9 @@ const PostsList = () => {
   // Retrieve the posts of that state.
   const posts = useSelector(selectAllPosts);
 
-  const orderedPosts = posts.slice().sort((a,b) => b.date.localeCompare(a.date))
+  const orderedPosts = posts
+    .slice()
+    .sort((a, b) => b.date.localeCompare(a.date));
 
   //Map each posts that are available.
   const renderedPosts = orderedPosts.map((post) => (
@@ -26,6 +29,7 @@ const PostsList = () => {
         <PostAuthor userId={post.userId} />
         <Time timestamp={post.date} />
       </p>
+      <ReactionButtons post={post} />
       <hr />
     </article>
   ));
