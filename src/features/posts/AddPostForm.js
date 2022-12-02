@@ -5,9 +5,6 @@ import { selectAllUsers } from "../users/usersSlice";
 import { addPost } from "./postsSlice";
 
 const AddPostForm = () => {
-  const myStyle = {
-    justifyContent: "right",
-  };
   const dispatch = useDispatch();
   const users = useSelector(selectAllUsers);
   const [title, setTitle] = useState("");
@@ -36,7 +33,7 @@ const AddPostForm = () => {
   ));
 
   return (
-    <div style={myStyle}>
+    <div>
       <h3>Add Posts</h3>
       <form>
         <label htmlFor="userName">
