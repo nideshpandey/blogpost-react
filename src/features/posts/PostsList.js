@@ -1,43 +1,43 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import PostAuthor from "./PostAuthor";
-import { selectAllPosts } from "./postsSlice";
-import ReactionButtons from "./ReactionButtons";
-import Time from "./Time";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Posts from "./Posts";
+import {
+  selectAllPosts,
+  getPostsStatus,
+  getPostsError,
+  fetchAllPosts,
+} from "./postsSlice";
 
 const PostsList = () => {
-  const myStyle = {
-    color: "black",
-    padding: "20px",
-    margin: "50px",
-    textAlign: "center",
-    justifyContent: "center",
-  };
+  const dispatch = useDispatch();
+
   // Retrieve the posts of that state.
   const posts = useSelector(selectAllPosts);
+  const status = useSelector(getPostsStatus);
+  const error = useSelector(getPostsError);
 
-  const orderedPosts = posts
-    .slice()
-    .sort((a, b) => b.date.localeCompare(a.date));
 
-  //Map each posts that are available.
-  const renderedPosts = orderedPosts.map((post) => (
-    <article key={post.id} style={myStyle}>
-      <h3>{post.title}</h3>
-      <p>{post.description}</p>
-      <p>
-        <PostAuthor userId={post.userId} />
-        <Time timestamp={post.date} />
-      </p>
-      <ReactionButtons post={post} />
-      <hr />
-    </article>
-  ));
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchAllPosts());
+    }
+  }, [status, dispatch]);
 
+  let content;
+  if (status === "loading") {
+    content = <p>Loading...</p>;
+  } else if (status === "succeeded") {
+    const orderedPosts = posts
+      .slice()
+      .sort((a, b) => b.date.localeCompare(a.date));
+    content = orderedPosts.map((post) => <Posts key={post.id} post={post} />);
+  } else if (status === "failed") {
+    content = <p>{error}</p>;
+  }
   return (
     <div>
       <h2 style={{ color: "gray" }}>All available posts !</h2>
-      {renderedPosts}
+      {content}
     </div>
   );
 };
